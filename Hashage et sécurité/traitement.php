@@ -36,8 +36,8 @@ if(isset($_GET["action"])) {
                 
             } else {
                 echo "Il y a un problème de saisie !";
-            }
-            header('location: register.php');exit;
+            } 
+            header("location: register.php");exit;
             break;
             
             case 'login': 
@@ -45,23 +45,43 @@ if(isset($_GET["action"])) {
                 
                 // Connexion à la DB
                 $pdo = new PDO("mysql::host=localhost;dbname=forum_giacomo;charset=utf8", "root", "");
+                // Filtrer les champs
                 $email= filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
                 $password= filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
+                
+                // Si les filtres sont corrects
                 if ($email && $password) {
                     $request = $pdo->prepare("SELECT * FROM user WHERE email = :email");
                     $request -> execute(['email' => $email]);
                     $user = $request->fetch();
 
-                    var_dump($user);die;
-
+                    // est ce que l'utilisateur existe ? 
+                    if($user){
+                        $hash = $user["password"];
+                        if(password_verify($password, $hash)){
+                            $_SESSION["user"] = $user;
+                            header("location: home.php"); exit;
+                        } else {
+                            header("location: login.php"); exit;
+                        }
+                    } else {
+                        echo "L'utilisateur n'existe pas !";
+                    }
                 }
             }
-
-            header("location: login.php"); exit;
+            header("location: login.php");exit;
             break;
-            // case 'logout': 
+
+            case 'profile': 
+                header("Location: profil.php"); exit;
+            break;
+
+            case 'logout':
+                unset($_SESSION["user"]);
+                header("Location: home.php"); exit;
+            break;
             }
+
 }
 
 
@@ -72,5 +92,3 @@ if(isset($_GET["action"])) {
 
 
 
-
-?>
