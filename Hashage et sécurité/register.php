@@ -21,7 +21,7 @@
         <label for="pass2">Confirmez votre Mot de passe</label>
         <input type="password" name="pass2" id="pass2"><br>
         
-        <input type="submit" value="S'enregistrer">
+        <input type="submit" name ="submit" id="submit" value="S'enregistrer">
     </form>
 </body>
 </html>
